@@ -19,15 +19,15 @@ mongoose.connect(process.env.DB_MONGO_URL,
     .then(() => console.log('Successful Mongoose connexion !'))
     .catch((error) => console.log('Connexion to Mongoose failed : ' + error));
 
-// app.use(cors());
+app.use(cors());
 
-// Middleware to handle CORS 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-    next();
-});
+// // Middleware to handle CORS 
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+//     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+//     next();
+// });
 
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
