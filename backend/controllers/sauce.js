@@ -1,5 +1,6 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
+const { findOne } = require('../models/Sauce');
 
 
 exports.createSauce = (req, res, next) => {
@@ -68,6 +69,36 @@ exports.deleteSauce = (req,res,next) => {
             });
         })
         .catch(error => res.status(500).json({error}));
+};
+
+exports.likeOrDislikeSauce = (req, res, next) => {
+    Sauce.findOne({_id: req.params.id})
+        .then(sauce => {
+            switch(req.body.like) {
+                case 1:
+                    sauce.usersLiked.push(req.body.userId);
+                    sauce.likes += 1;
+                    break;
+                case -1:
+                    sauce.usersDisliked.push(req.body.userId);
+                    sauce.dislikes += 1;
+                    break;
+                case 0:
+                    if (sauce.usersLiked.indexOf(req.body.userId) === -1) {
+                        sauce.usersDisliked = sauce.usersDisliked.filter(user => user != req.body.userId);
+                        sauce.dislikes -= 1;
+                    } else {
+                        sauce.usersLiked = sauce.usersLiked.filter(user => user != req.body.userId);
+                        sauce.likes -= 1;
+                    }
+                    break;
+                default:
+                    throw new Error('Value of like not conforms - check Front-end');
+            };
+            sauce.save();
+            res.status(200).json({message:'Like or dislike updated !'});
+        })
+        .catch(error => res.status(400).json(error));
 };
 
 
