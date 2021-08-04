@@ -1,6 +1,6 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
-const { findOne } = require('../models/Sauce');
+const jwt = require('jsonwebtoken');
 
 
 exports.createSauce = (req, res, next) => {
@@ -33,12 +33,9 @@ exports.getOneSauce = (req, res, next) => {
 exports.modifySauce = (req, res, next) => {
     let sauceObject = {};
     if (req.file) {
-        console.log(req.file);
-        console.log("1er sauce objet : ", sauceObject);
         Sauce.findOne({_id: req.params.id})
             .then(sauce => {
                 const filename = sauce.imageUrl.split('/images')[1];
-                console.log(filename);
                 fs.unlink(`images/${filename}`, (error) => {
                     if (error) throw error;
                     console.log('Old image successfully deleted');
@@ -52,9 +49,17 @@ exports.modifySauce = (req, res, next) => {
     } else {
         sauceObject = {...req.body} ;
     }
-    Sauce.updateOne( {_id:req.params.id}, {...sauceObject, _id: req.params.id})
-        .then(() => res.status(200).json({message: 'Sauce succesfully modified !'}))
-        .catch(error => res.status(400).json({error}));
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+    if (userId === sauceObject.userId) {
+        Sauce.updateOne( {_id:req.params.id}, {...sauceObject, _id: req.params.id})
+            .then(() => res.status(200).json({message: 'Sauce succesfully modified !'}))
+            .catch(error => res.status(400).json({error}));
+    } else {
+        throw new Error("403: unauthorized request");
+    }
+    
 };
 
 exports.deleteSauce = (req,res,next) => {
