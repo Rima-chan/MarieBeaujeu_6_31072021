@@ -1,0 +1,266 @@
+FORMAT: 1A
+HOST: https://localhost:3000/api
+
+# Piiquante
+
+Piiquante is a simple web app API. User signup and login to the app to share, modify, delete and like/dislike hot sauces.
+
+## Authentification Collection [/auth]
+
+### Create new user [POST /signup]
+
+It takes a JSON Object containing an email and a password (provided by user if the form).
+Returns a confirmation message and save the user in the database.
+
++ Request
+
+            {
+                "email": "example@mail.com",
+                "password": "1234"
+            }
+    
+
++ Response 201 (application/json)
+
+        {
+            "message": "User created !"
+        }
+
+
+### Login existing user [POST /login]
+
+It takes a JSON Object containing an email and a password, check matches and enable or not authentification.
+Returns a JSON Object containing the user ID provided by the database and an authentification token.
+
++ Request 
+
+        {
+            "email": "example@mail.com",
+            "password": "1234"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "userdId": "611b89b7398c61252c4ed123",
+            "token": "eyJhbGciOiJIUzI1NiIsI..."
+        }
+
+
+## Sauces collection [/sauces]
+
+All routes sauces require an authentification by Bearer Token : user must be connected to see other sauces and make any actions on the app.
+
+### Create a new sauce [POST]
+
+Create a new sauce using informations provided by the user : name, manufacturer, description, main pepper, image Url, heat.
+It takes a JSON object containing two properties : sauce (string) and image (file)
+Initialise likes/dislikes to 0.
+Initialise usersLiked/usersDisliked to [].
+Return a confirmation message
+
++ Request (multipart/form-data)
+
+    + Headers 
+                
+                Authorization: token eyJhbGciOiJIUzI1NiIsI...
+                Accept: application/json, text/plain, */*
+                
+    + Body
+    
+            {
+                "sauce": {  "userId": "611b89b7398c61252c4ed123",
+                            "name": "First sauce",
+                            "manufacturer": "First manufacturer",
+                            "description": "First description",
+                            "mainPepper": "Main pepper of the first sauce",
+                            "heat": "5"
+                        },
+                "image" : "file"
+            }
+                
+
++ Response 201 (application/json)
+
+        {
+            "message": "Sauce Created !"
+        }
+
+
+
+### Get all sauces [GET]
+
+Returns an array of all sauces. 
+
++ Request (application/json)
+    
+    + Headers 
+                
+                Authorization: token eyJhbGciOiJIUzI1NiIsI...
+    
+
++ Response 200 (application/json)
+
+                
+            [
+                {
+                    "userId": "611b89b7398c61252c4ed123",
+                    "name": "First sauce",
+                    "manufacturer": "First manufacturer",
+                    "description": "First description",
+                    "mainPepper": "Main pepper of the first sauce",
+                    "imageUrl": "URL",
+                    "heat": "5",
+                    "likes": "0",
+                    "dislikes":"0",
+                    "usersLiked": "[]",
+                    "usersDisliked":"[]"
+                }
+                {
+                    "userId": "611b89b7398c61252c4ed123",
+                    "name": "Second sauce",
+                    "manufacturer": "Second manufacturer",
+                    "description": "Second description",
+                    "mainPepper": "Main pepper of the second sauce",
+                    "imageUrl": "URL",
+                    "heat": "8",
+                    "likes": "0",
+                    "dislikes":"0",
+                    "usersLiked": "[]",
+                    "usersDisliked":"[]"
+                }
+            ]
+
+### Get one sauce [GET /sauces/{sauce_id}]
+
+Returns JSON object containing sauce informations and an image file.
+
++ Parameters
+    + sauce_id - ID of the sauce, provided by database and reachable in query parameters
+
++ Request (application/json)
+    
+    + Headers 
+                
+                Authorization: token eyJhbGciOiJIUzI1NiIsI...
+
++ Response 200 (application/json)
+
+        {
+            "userId": "611b89b7398c61252c4ed123",
+            "name": "First sauce",
+            "manufacturer": "First manufacturer",
+            "description": "First description",
+            "mainPepper": "Main pepper of the first sauce",
+            "imageUrl": "URL",
+            "heat": "5",
+            "likes": "0",
+            "dislikes":"0",
+            "usersLiked": "[]",
+            "usersDisliked":"[]"
+        }
+
+### Update an exisiting sauce [PUT /sauces/{sauce_id}]
+
+It can take either as a JSON object containing one propierty (string) OR either as a JSON object containing two properties (string and file)
+Returns a confirmation message
+
++ Parameters
+    + sauce_id - ID of the sauce, provided by database and reachable in query parameters
+
++ Request (application/json)
+
+    + Headers 
+                
+                Authorization: token eyJhbGciOiJIUzI1NiIsI...
+                
+    + Body
+    
+            {
+                "userId": "611b89b7398c61252c4ed123",
+                "name": "New first sauce name",
+                "manufacturer": "First manufacturer",
+                "description": "Main pepper of the first sauce",
+                "mainPepper": "soja",
+                "imageUrl": "URL",
+                "heat": "5",
+                "likes": "0",
+                "dislikes":"0",
+                "usersLiked": "[]",
+                "usersDisliked":"[]"
+            }
+
++ Response 200 (application/json)
+
+        {
+            "message": "Sauce successfully updated  !"
+        }
+        
++ Request (multipart/form-data)
+
+    + Headers 
+                
+                Authorization: token eyJhbGciOiJIUzI1NiIsI...
+                
+    + Body
+    
+            {
+                "sauce": {  "userId": "611b89b7398c61252c4ed123",
+                            "name": "First sauce",
+                            "manufacturer": "First manufacturer",
+                            "description": "First description",
+                            "mainPepper": "Main pepper of the first sauce",
+                            "heat": "5"
+                        },
+                "image" : "new file"
+            }
+
++ Response 200 (application/json)
+
+        {
+            "message": "Sauce successfully updated  !"
+        }
+
+### Delete a sauce [DELETE /sauces/{sauce_id}]
+
+Delete the sauce which match with provided id.
+
++ Parameters
+    + sauce_id - ID of the sauce, provided by database and reachable in query parameters
+
++ Request (application/json)
+
+    + Headers 
+                
+                Authorization: token eyJhbGciOiJIUzI1NiIsI...
+
+
++ Response 204 (application/json)
+
+
+### Like or dislike a sauce [POST /sauces/{sauce_id}/like]
+
+It takes a JSON object containing the userId (string) and the like (number) provided by front-end.
+Defines like status for the provided userId. Add or delete userId from the right array (usersLiked or usersDisliked) 
+
++ Parameters
+    + sauce_id - ID of the sauce, provided by database and reachable in query parameters
+
++ Request (application/json)
+
+    + Headers 
+                
+                Authorization: token eyJhbGciOiJIUzI1NiIsI...
+
+    + Body 
+    
+            {
+                "userId": "611b89b7398c61252c4ed123",
+                "like": "1"
+            }
+
++ Response 200 (application/json)
+            
+            {
+                "message": "Like or dislike udpated !"
+            }
