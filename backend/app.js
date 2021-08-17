@@ -1,4 +1,3 @@
-
 const express = require('express');
 require('dotenv').config();
 const mongoose = require('mongoose');
@@ -19,13 +18,12 @@ mongoose.connect(process.env.DB_MONGO_URL,
     .then(() => console.log('Successful Mongoose connexion !'))
     .catch((error) => console.log('Connexion to Mongoose failed : ' + error));
 
+// Prevent CORS policy 
 app.use(cors());
 
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/auth', userRoutes);
 app.use('/api/sauces', sauceRoutes);
-
-
 
 module.exports = app;

@@ -23,16 +23,15 @@ exports.login = (req, res) =>  {
                 return res.status(401).json({error: 'User not find !'});
             }
             bcrypt.compare(req.body.password, user.password)
-                // fonction asynchrone qui renvoie un bolean
                 .then((valid) => {
                     if (!valid) {
-                        return res.status(401).json({error: 'Mot de passe incorrect'});
+                        return res.status(401).json({error: 'Incorrect Password'});
                     }
                     res.status(200).json({
                         userId: user._id,
                         token: jwt.sign(
                             {userId: user._id},
-                            'RANDOM_TOKEN_SECRET',
+                            'RANDOM_TOKEN_SECRET', // To change for production
                             { expiresIn: '24h' }
                         )   
                     });

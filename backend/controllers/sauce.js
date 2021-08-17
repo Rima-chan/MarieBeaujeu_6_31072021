@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
-    console.log("req.fil", req.file);
     const sauce = new Sauce({
         ...sauceObject,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
@@ -14,13 +13,12 @@ exports.createSauce = (req, res, next) => {
         usersLiked: [],
         usersDisliked: []
     });
-    console.log(sauce);
     sauce.save()
         .then( () => res.status(201).json({message:'Sauce created !'}))
         .catch(error => {
-            res.status(400).json({error});
+            res.status(400).json({message: "null"});
             console.log(error);
-        });
+        }); 
 };
 
 
@@ -30,6 +28,10 @@ exports.getOneSauce = (req, res, next) => {
         .catch(error => res.status(400).json({error}));
 };
 
+
+// CASE 1 - file upload : delete old image in the server and the udpate the sauce
+// CASE 2 - file not upload : update the sauce
+// ALL CASES : check if userID matches with userID's sauce
 exports.modifySauce = (req, res, next) => {
     let sauceObject = {};
     if (req.file) {
@@ -38,7 +40,6 @@ exports.modifySauce = (req, res, next) => {
                 const filename = sauce.imageUrl.split('/images')[1];
                 fs.unlink(`images/${filename}`, (error) => {
                     if (error) throw error;
-                    console.log('Old image successfully deleted');
                 });
             })
             .catch(error => res.status(500).json({error}));
@@ -66,7 +67,6 @@ exports.deleteSauce = (req,res,next) => {
     Sauce.findOne({ _id: req.params.id})
         .then(sauce => {
             const filename = sauce.imageUrl.split('/images')[1];
-            console.log(filename);
             fs.unlink(`images/${filename}`, () => {
                 Sauce.deleteOne({_id: req.params.id})
                     .then(() => res.status(204).json({message: 'Sauce deleted !'}))
@@ -76,6 +76,7 @@ exports.deleteSauce = (req,res,next) => {
         .catch(error => res.status(500).json({error}));
 };
 
+// Check "like" value sent by front-end and acts accordingly (like / dislike / cancel like / cancel dislike)
 exports.likeOrDislikeSauce = (req, res, next) => {
     Sauce.findOne({_id: req.params.id})
         .then(sauce => {

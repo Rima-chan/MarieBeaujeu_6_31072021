@@ -21,3 +21,16 @@ If your browser fails to launch, or shows a 404 error, navigate your browser to 
 The app should reload automatically when you make a change to a file.
 
 Use `Ctrl+C` in the terminal to stop the local server.
+
+## Backend Configuration ##
+
+Create `.env` file. 
+
+In the `PORT` variable, indicates your PORT.
+
+In the `DB_MONGO_URL` variable, indicates your Mongo DB URL provided by Mongo DB (with username and password). 
+
+Install `Nodemon Package`.
+
+Run the server with `nodemon server`.
+
