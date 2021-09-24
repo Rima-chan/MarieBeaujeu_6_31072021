@@ -1,4 +1,9 @@
-# HOT TAKES #
+# HOT TAKES - OpenClassRooms project #
+
+## Mission ##
+
+Build a secure API Rest for foodies reviews website.
+Front-end already built. 
 
 ## Installation ##
 
@@ -34,3 +39,6 @@ Install `Nodemon Package`.
 
 Run the server with `nodemon server`.
 
+_____________________________________________________
+
+![image](https://user-images.githubusercontent.com/77418945/134634455-9b11c3ff-0c25-45d0-8032-672731650540.png) 
